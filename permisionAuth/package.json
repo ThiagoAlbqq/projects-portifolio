@@ -6,9 +6,6 @@
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
-  "prisma": {
-    "schema": "src/prisma/schema.prisma"
-  },
   "author": "",
   "license": "ISC",
   "description": "",

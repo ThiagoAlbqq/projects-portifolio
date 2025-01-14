@@ -1,12 +1,11 @@
 import { config } from 'dotenv'
 import fastify from 'fastify'
-import { userRoutes } from './routes/users.routes'
+import { userRoutes } from './users/routes/users.routes'
+import { userAuthRoutes } from './auth/routes/auth.routes'
 import fastifyCookie from '@fastify/cookie'
-import { logRequest } from './middlewares/logRequest'
 
 config()
 const app = fastify()
-app.addHook('onRequest', logRequest)
 
 // Configuração do Swagger
 app.register(import('@fastify/swagger'), {
@@ -24,7 +23,7 @@ app.register(import('@fastify/swagger'), {
 })
 
 app.register(import('@fastify/swagger-ui'), {
-  routePrefix: '/docs',
+  routePrefix: '/docs', // Caminho onde a documentação será acessada
   staticCSP: true,
   transformStaticCSP: (header) => header,
   uiConfig: {
@@ -38,6 +37,7 @@ app.register(import('@fastify/swagger-ui'), {
 })
 
 app.register(userRoutes, { prefix: '/users' })
+app.register(userAuthRoutes)
 app.register(fastifyCookie, {
   secret: process.env.COOKIE_SECRET || 'chaveSecreta', // Opcional: para cookies assinados
 })
