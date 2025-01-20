@@ -53,20 +53,32 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
 
 ## Rotas da API
 
-| Método | Endpoint           | Descrição                    | Autenticação Necessária |
-| ------ | ------------------ | ---------------------------- | ----------------------- |
-| POST   | `/api/login`       | Autentica o usuário.         | Não                     |
-| POST   | `/api/logout`      | Realiza o logout do usuário. | Sim                     |
-| POST   | `/api/refresh`     | Realiza o refresh do token.  | Sim                     |
-| POST   | `/api/user`        | Cria um novo usuário.        | Não                     |
-| GET    | `/api/user`        | Lista o usuário.             | Sim                     |
-| PUT    | `/api/user`        | Modifica dados do usuário.   | Sim                     |
-| DELETE | `/api/user`        | Deleta o usuário.            | Sim                     |
-| POST   | `/api/admin/user`  | Cria um novo usuário.        | Sim                     |
-| GET    | `/api/admin/users` | Lista todos os usuários.     | Sim                     |
-| GET    | `/api/admin/user`  | Lista qualquer usuário.      | Sim                     |
-| PUT    | `/api/admin/users` | Modifica qualquer usuário.   | Sim                     |
-| DELETE | `/api/admin/users` | Deleta qualquer usuário.     | Sim                     |
+### Autenticação
+
+| Método | Endpoint       | Descrição                    | Autenticação Necessária |
+| ------ | -------------- | ---------------------------- | ----------------------- |
+| POST   | `/api/login`   | Autentica o usuário.         | Não                     |
+| POST   | `/api/logout`  | Realiza o logout do usuário. | Sim                     |
+| POST   | `/api/refresh` | Realiza o refresh do token.  | Sim                     |
+
+### Publicas
+
+| Método | Endpoint    | Descrição                  | Autenticação Necessária |
+| ------ | ----------- | -------------------------- | ----------------------- |
+| POST   | `/api/user` | Cria um novo usuário.      | Não                     |
+| GET    | `/api/user` | Lista o usuário.           | Sim                     |
+| PUT    | `/api/user` | Modifica dados do usuário. | Sim                     |
+| DELETE | `/api/user` | Deleta o usuário.          | Sim                     |
+
+### Privadas (ADMINS)
+
+| Método | Endpoint           | Descrição                  | Autenticação Necessária |
+| ------ | ------------------ | -------------------------- | ----------------------- |
+| POST   | `/api/admin/user`  | Cria um novo usuário.      | Sim (ADMIN)             |
+| GET    | `/api/admin/users` | Lista todos os usuários.   | Sim (ADMIN)             |
+| GET    | `/api/admin/user`  | Lista qualquer usuário.    | Sim (ADMIN)             |
+| PUT    | `/api/admin/users` | Modifica qualquer usuário. | Sim (ADMIN)             |
+| DELETE | `/api/admin/users` | Deleta qualquer usuário.   | Sim (ADMIN)             |
 
 ---
 
