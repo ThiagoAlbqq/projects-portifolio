@@ -145,6 +145,12 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "Authorization": "Bearer {token}"
   }
   ```
+- **Cookies:**
+  ```json
+  {
+    "refresh": "xyz123.."
+  }
+  ```
 - **Resposta (200):**
   ```json
   {
@@ -152,6 +158,71 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "message": "Logout successful"
   }
   ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Token is required"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal Server Error"
+  }
+  ```
+  - Em caso de erro durante a comunicação com o banco, a mensagem pode incluir detalhes como "Prisma error" no ambiente de desenvolvimento.
+
+### POST `/api/refresh`
+
+**Descrição:** Cria um novo token a partir do refresh token (chamada pelo middleware)
+
+- **Headers:**
+  ```json
+  {
+    "Content-Type": "application/json"
+  }
+  ```
+- **Tokens:**
+  ```json
+  {
+    "token": "abcdef...",
+    "refresh": "xyz123..."
+  }
+  ```
+- **User:**
+  ```json
+  {
+    "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+    "role": "ADMIN"
+  }
+  ```
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "Token obtained by refresh token",
+    "data": {
+      "token": "abcdef..."
+    }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Token is required"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal Server Error"
+  }
+  ```
+  - Em caso de erro durante a comunicação com o banco, a mensagem pode incluir detalhes como "Prisma error" no ambiente de desenvolvimento.
 
 ### POST `/api/users`
 

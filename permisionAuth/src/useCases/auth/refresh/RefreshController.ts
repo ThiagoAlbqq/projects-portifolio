@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { z, ZodError } from 'zod'
 import { RefreshUseCase } from './RefreshUseCase'
 import { handleValidationError } from '../../../utils/handleValidationError'
+import { PrismaClientValidationError } from '@prisma/client/runtime/library'
 
 const RefreshTokensSchema = z.object({
   token: z.string({ required_error: 'Token is required' }),
@@ -23,12 +24,33 @@ class RefreshController {
       console.log(`Um novo token foi criado para o usuario.`)
       const bearerToken = `Bearer ${newToken}`
 
-      reply.header('Authorization', bearerToken).status(200).send(newToken)
+      reply.header('Authorization', bearerToken).status(200).send({
+        success: true,
+        message: 'Token obtained by refresh token',
+        deta: newToken,
+      })
     } catch (error) {
       if (error instanceof ZodError) {
-        return reply.status(400).send(handleValidationError(error))
+        console.warn(`[LOGIN] Erro de validação: ${error.message}`)
+        return reply.status(400).send({
+          success: false,
+          message: handleValidationError(error),
+        })
       }
-      return reply.status(500).send(error)
+
+      if (error instanceof PrismaClientValidationError) {
+        console.error(`[LOGIN] Erro de validação do Prisma: ${error.message}`)
+        return reply.status(500).send({
+          success: false,
+          message: error.message,
+        })
+      }
+
+      console.error(`[LOGIN] Erro inesperado: ${error}`)
+      return reply.status(500).send({
+        success: false,
+        message: 'Internal Server Error',
+      })
     }
   }
 }
