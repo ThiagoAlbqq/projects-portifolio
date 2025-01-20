@@ -107,11 +107,33 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "success": true,
     "message": "User successfully logged in",
     "data": {
-      "token": "Bearer abcdef...",
+      "token": "abcdef...",
       "refresh": "xyz123..."
     }
   }
   ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Invalid email format"
+  }
+  ```
+- **Resposta (401):**
+  ```json
+  {
+    "success": false,
+    "message": "Invalid email or password"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal Server Error"
+  }
+  ```
+  - Em caso de erro durante a comunicação com o banco, a mensagem pode incluir detalhes como "Prisma error" no ambiente de desenvolvimento.
 
 ### POST `/api/logout`
 
