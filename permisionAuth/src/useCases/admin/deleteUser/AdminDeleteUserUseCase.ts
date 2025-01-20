@@ -1,19 +1,19 @@
 import { Prisma } from '@prisma/client'
 import { prisma } from '../../../database/prisma.config'
 
-class DeleteUserUseCase {
+class AdminDeleteUserUseCase {
   async execute(id: string) {
     try {
-      const user = await prisma.user.findUnique({
-        where: { id },
-        select: { id: true, email: true },
-      })
-      if (!user) {
+      const isUserExists = await prisma.user.findUnique({ where: { id } })
+
+      if (!isUserExists) {
         throw new Error('User not found')
       }
-      await prisma.user.delete({ where: { id } })
-      return user
+
+      const data = await prisma.user.delete({ where: { id } })
+      return data
     } catch (error) {
+      console.log(error)
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         throw new Error(
           `Error at delete user: Prisma error code ${error.code} - ${error.message}`
@@ -28,4 +28,4 @@ class DeleteUserUseCase {
   }
 }
 
-export { DeleteUserUseCase }
+export { AdminDeleteUserUseCase }

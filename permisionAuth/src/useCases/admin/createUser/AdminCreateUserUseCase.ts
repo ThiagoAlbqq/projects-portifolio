@@ -7,30 +7,33 @@ interface IUserRequest {
   name: string
   email: string
   password: string
+  role?: 'ADMIN' | 'USER' | 'MODERATOR'
 }
 
-class CreateUserUseCase {
-  async execute({ name, email, password }: IUserRequest) {
+class AdminCreateUserUseCase {
+  async execute({ name, email, password, role }: IUserRequest) {
     try {
-      const userAlreadyExists = await prisma.user.findUnique({
+      const isNotUniqueEmail = await prisma.user.findUnique({
         where: { email },
       })
-      if (userAlreadyExists) {
-        throw new Error('User already exists')
+
+      if (isNotUniqueEmail) {
+        throw new Error('Email already exists')
       }
 
       const passwordHash = await createPassword(password)
 
-      const newUser = await prisma.user.create({
+      const data = await prisma.user.create({
         data: {
           name,
           email,
           password: passwordHash,
+          ...(role && { role: role }),
         },
       })
-
-      return newUser
+      return data
     } catch (error) {
+      console.error('Erro no Prisma:', error)
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         throw new Error(
           `Error at create user: Prisma error code ${error.code} - ${error.message}`
@@ -45,4 +48,4 @@ class CreateUserUseCase {
   }
 }
 
-export { CreateUserUseCase }
+export { AdminCreateUserUseCase }

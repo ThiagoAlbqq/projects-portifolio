@@ -8,13 +8,12 @@ datasource db {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
+  id           String         @id @default(uuid())
   name         String         @db.VarChar(100)
   email        String         @unique @db.VarChar(255)
   password     String
-  role         Role
+  role         Role           @default(USER)
   lastLogout   DateTime?
-  UserSessions UserSessions[]
   RefreshToken RefreshToken[]
 }
 
@@ -22,16 +21,6 @@ enum Role {
   ADMIN
   USER
   MODERATOR
-}
-
-model UserSessions {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique @db.VarChar(500)
-  ipAddress String
-  isValid   Boolean
-  expiresAt DateTime
 }
 
 model TokenBlackList {
@@ -43,7 +32,7 @@ model TokenBlackList {
 model RefreshToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
-  userId    Int
+  userId    String
   isValid   Boolean  @default(true)
   createdAt DateTime @default(now())
   ipAddress String

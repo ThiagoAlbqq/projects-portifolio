@@ -3,7 +3,7 @@ import { prisma } from '../../../database/prisma.config'
 import { createPassword } from '../../../utils/createPassword'
 
 interface IUserUpdateRequest {
-  id: number
+  id: string
   name?: string
   email?: string
   password?: string
@@ -13,14 +13,7 @@ interface IUserUpdateRequest {
 }
 
 class UpdateUserUseCase {
-  async execute({
-    id,
-    name,
-    email,
-    password,
-    role,
-    authenticatedUserId,
-  }: IUserUpdateRequest) {
+  async execute({ id, name, email, password }: IUserUpdateRequest) {
     try {
       const user = await prisma.user.findUnique({ where: { id } })
       if (!user) {
@@ -38,12 +31,6 @@ class UpdateUserUseCase {
         ...(name && { name }),
         ...(email && { email }),
         ...(password && { password: await createPassword(password) }),
-      }
-
-      if (authenticatedUserId) {
-        if (role && user.id !== authenticatedUserId) {
-          dataToUpdate.role = role
-        }
       }
 
       const updatedUser = await prisma.user.update({

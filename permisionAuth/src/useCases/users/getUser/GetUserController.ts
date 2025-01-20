@@ -4,31 +4,31 @@ import { handleValidationError } from '../../../utils/handleValidationError'
 import { GetUserUseCase } from './GetUserUseCase'
 
 const getUserQuerySchema = z.object({
-  id: z.string().regex(/^\d+$/).optional().transform(Number),
-  email: z.string().email().optional(),
+  id: z.string().uuid(),
 })
 
 class GetUserController {
-  async handle(request: FastifyRequest, reply: FastifyReply) {
+  async handle(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const { id, email } = getUserQuerySchema.parse(request.query!)
+      const { id } = getUserQuerySchema.parse(req.user)
       const getUserUseCase = new GetUserUseCase()
-      if (id) {
-        const user = await getUserUseCase.findUserById(id)
-        return reply.status(200).send(user)
-      }
-      if (email) {
-        const user = await getUserUseCase.findUserByEmail(email)
-        return reply.status(200).send(user)
-      }
-      reply.status(400).send({
-        message: 'Você deve fornecer um dos parametros: id ou email',
+      const user = await getUserUseCase.findUserById(id)
+      return reply.status(200).send({
+        sucess: true,
+        message: 'User successfully obtained',
+        data: user,
       })
     } catch (error) {
       if (error instanceof ZodError) {
-        return reply.status(400).send(handleValidationError(error))
+        return reply.status(400).send({
+          sucess: false,
+          message: handleValidationError(error),
+        })
       }
-      return reply.status(500).send(error)
+      return reply.status(500).send({
+        sucess: false,
+        message: error,
+      })
     }
   }
 }

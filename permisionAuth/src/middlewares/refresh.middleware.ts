@@ -1,67 +1,41 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
-import jwt from 'jsonwebtoken'
 import { ERRORS } from '../errors/errors'
-import { verifyToken } from '../utils/createTokenAndRefreshToken'
+import { verifyRefreshToken } from '../utils/createTokenAndRefreshToken'
 
-// Segredos do JWT
-const SECRET = process.env.JWT_SECRET || 'segredoPadrao'
-const REFRESH_TOKEN_SECRET =
-  process.env.JWT_REFRESH_SECRET || 'segredoPadraoRefresh'
-
-// Middleware JWT e Refresh Token
-export default async function jwtAndRefreshMiddleware(
+export default async function refreshMiddleware(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
   try {
+    const refresh = request.cookies?.refresh
+    if (!refresh) {
+      return reply.status(401).send('Invalid refresh token!')
+    }
     const authHeader = request.headers.authorization
-    if (!authHeader?.startsWith('Bearer ')) {
-      reply.status(401).send({ error: ERRORS.noToken })
-      return
+
+    if (!authHeader) {
+      console.error('Cabeçalho de autorização ausente')
+      return reply.status(401).send({ message: 'Autorização ausente' })
     }
 
     const token = authHeader.split(' ')[1]
     if (!token) {
-      reply.status(401).send({ error: ERRORS.malformedToken })
-      return
-    }
-    const { refresh } = request.cookies
-    if (!refresh) {
-      reply.status(401).send({ error: ERRORS.noRefreshToken })
-      return
+      console.error('Token malformado')
+      return reply.status(401).send({ message: 'Token malformado' })
     }
 
-    try {
-      console.log('oi')
-      const decoded = verifyToken(token)
-      console.log(decoded)
-      const decodedRefreshToken = jwt.verify(refresh, REFRESH_TOKEN_SECRET)
+    const decodedRefreshToken = verifyRefreshToken(refresh)
+    request.user = {
+      id: decodedRefreshToken.id,
+      role: decodedRefreshToken.role,
+    }
 
-      request.user = {
-        id: decoded.id,
-        role: decoded.role,
-      }
-
-      request.tokens = {
-        token,
-        refresh,
-      }
-    } catch (err) {
-      if (err instanceof jwt.JsonWebTokenError) {
-        const errorMsg =
-          err.message.includes('expired') || err.message.includes('invalid')
-            ? ERRORS.invalidToken
-            : ERRORS.invalidRefreshToken
-
-        reply.status(401).send({ error: errorMsg })
-        return
-      }
-
-      reply.status(401).send({ error: ERRORS.invalidToken })
-      return
+    request.tokens = {
+      token,
+      refresh,
     }
   } catch (err) {
     console.error('Erro no middleware JWT:', err)
-    reply.status(500).send({ error: ERRORS.serverError })
+    reply.status(500).send({ error: ERRORS.SERVER_ERROR })
   }
 }

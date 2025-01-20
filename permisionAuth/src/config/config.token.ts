@@ -1,0 +1,6 @@
+export const TOKEN_EXPIRATION_TIME = Number(
+  process.env.TOKEN_EXPIRATION_TIME || 3600
+)
+export const REFRESH_TOKEN_EXPIRATION_TIME = Number(
+  process.env.REFRESH_TOKEN_EXPIRATION_TIME || 604800
+)

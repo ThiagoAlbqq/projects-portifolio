@@ -3,12 +3,13 @@ import fastify from 'fastify'
 import { userRoutes } from './routes/users.routes'
 import fastifyCookie from '@fastify/cookie'
 import { logRequest } from './middlewares/logRequest'
+import { adminRoutes } from './routes/admin.routes'
+import { authRoutes } from './routes/auth.routes'
 
 config()
 const app = fastify()
 app.addHook('onRequest', logRequest)
 
-// Configuração do Swagger
 app.register(import('@fastify/swagger'), {
   swagger: {
     info: {
@@ -28,7 +29,7 @@ app.register(import('@fastify/swagger-ui'), {
   staticCSP: true,
   transformStaticCSP: (header) => header,
   uiConfig: {
-    docExpansion: 'list', // Lista as rotas de forma aberta
+    docExpansion: 'list',
     deepLinking: true,
   },
   uiHooks: {
@@ -37,9 +38,12 @@ app.register(import('@fastify/swagger-ui'), {
   },
 })
 
-app.register(userRoutes, { prefix: '/users' })
+app.register(userRoutes)
+app.register(adminRoutes)
+app.register(authRoutes)
+
 app.register(fastifyCookie, {
-  secret: process.env.COOKIE_SECRET || 'chaveSecreta', // Opcional: para cookies assinados
+  secret: process.env.COOKIE_SECRET || 'chaveSecreta',
 })
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000

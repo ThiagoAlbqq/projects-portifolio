@@ -3,45 +3,34 @@ import { z, ZodError } from 'zod'
 import { DeleteUserUseCase } from './DeleteUserUseCase'
 import { handleValidationError } from '../../../utils/handleValidationError'
 
-const deleteUserBodySchema = z.object({
-  id: z.number(),
-})
-
-const deleteUserTokenSchema = z.object({
-  id: z.number(),
-  role: z.enum(['ADMIN', 'USER', 'MODERATOR']),
+const deleteUserSchema = z.object({
+  id: z.string().uuid(),
 })
 
 class DeleteUserController {
-  async handle(request: FastifyRequest, reply: FastifyReply) {
+  async handle(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const token = request.user!
-      const { id, role } = deleteUserTokenSchema.parse(token)
+      const { id } = deleteUserSchema.parse(req.user)
 
       const deleteUserUseCase = new DeleteUserUseCase()
+      const deletedUser = await deleteUserUseCase.execute(id)
 
-      if (role === 'ADMIN' && request.body) {
-        const deletedUserId = deleteUserBodySchema.parse(request.body)
-        const deleteUser = await deleteUserUseCase.execute(deletedUserId.id)
-
-        return reply.status(200).send({
-          ok: deleteUser,
-          message: `O admin de id: ${id} deletou com sucesso o usuário de id: ${deletedUserId.id}!`,
-        })
-      }
-
-      const deleteUser = await deleteUserUseCase.execute(id)
       return reply.status(200).send({
-        ok: deleteUser,
-        message: `O usuário de id: ${id} foi deletado com sucesso!`,
+        success: true,
+        message: `User deleted successfully`,
+        data: deletedUser,
       })
     } catch (error) {
       if (error instanceof ZodError) {
-        return reply.status(400).send(handleValidationError(error))
+        return reply.status(400).send({
+          success: false,
+          message: handleValidationError(error),
+        })
       }
-
-      console.error('Erro ao deletar usuário:', error)
-      return reply.status(500).send({ error: 'Erro interno do servidor' })
+      return reply.status(500).send({
+        success: false,
+        message: error,
+      })
     }
   }
 }
