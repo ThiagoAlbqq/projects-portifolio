@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { z, ZodError } from 'zod'
 import { handleValidationError } from '../../../utils/handleValidationError'
 import { UpdateUserUseCase } from './UpdateUserUseCase'
+import { PrismaClientValidationError } from '@prisma/client/runtime/library'
 
 const authenticatedUser = z.object({
   id: z.string(),
@@ -41,14 +42,27 @@ class UpdateUserController {
       })
     } catch (error) {
       if (error instanceof ZodError) {
+        console.warn(`[PUT USER] Erro de validação: ${error.message}`)
         return reply.status(400).send({
           success: false,
           message: handleValidationError(error),
         })
       }
+
+      if (error instanceof PrismaClientValidationError) {
+        console.error(
+          `[PUT USER] Erro de validação do Prisma: ${error.message}`
+        )
+        return reply.status(500).send({
+          success: false,
+          message: error.message,
+        })
+      }
+
+      console.error(`[PUT USER] Erro inesperado: ${error}`)
       return reply.status(500).send({
         success: false,
-        message: error,
+        message: 'Internal Server Error',
       })
     }
   }

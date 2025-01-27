@@ -72,13 +72,13 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
 
 ### Privadas (ADMINS)
 
-| Método | Endpoint           | Descrição                  | Autenticação Necessária |
-| ------ | ------------------ | -------------------------- | ----------------------- |
-| POST   | `/api/admin/user`  | Cria um novo usuário.      | Sim (ADMIN)             |
-| GET    | `/api/admin/users` | Lista todos os usuários.   | Sim (ADMIN)             |
-| GET    | `/api/admin/user`  | Lista qualquer usuário.    | Sim (ADMIN)             |
-| PUT    | `/api/admin/users` | Modifica qualquer usuário. | Sim (ADMIN)             |
-| DELETE | `/api/admin/users` | Deleta qualquer usuário.   | Sim (ADMIN)             |
+| Método | Endpoint              | Descrição                  | Autenticação Necessária |
+| ------ | --------------------- | -------------------------- | ----------------------- |
+| POST   | `/api/admin/user`     | Cria um novo usuário.      | Sim (ADMIN)             |
+| GET    | `/api/admin/users`    | Lista todos os usuários.   | Sim (ADMIN)             |
+| GET    | `/api/admin/user`     | Lista qualquer usuário.    | Sim (ADMIN)             |
+| PUT    | `/api/admin/user/:id` | Modifica qualquer usuário. | Sim (ADMIN)             |
+| DELETE | `/api/admin/user/:id` | Deleta qualquer usuário.   | Sim (ADMIN)             |
 
 ---
 
@@ -172,7 +172,6 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "message": "Internal Server Error"
   }
   ```
-  - Em caso de erro durante a comunicação com o banco, a mensagem pode incluir detalhes como "Prisma error" no ambiente de desenvolvimento.
 
 ### POST `/api/refresh`
 
@@ -222,11 +221,10 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "message": "Internal Server Error"
   }
   ```
-  - Em caso de erro durante a comunicação com o banco, a mensagem pode incluir detalhes como "Prisma error" no ambiente de desenvolvimento.
 
-### POST `/api/users`
+### POST `/api/admin/user`
 
-**Descrição:** Cria um novo usuário.
+**Descrição:** Admin cria um novo usuário.
 
 - **Headers:**
   ```json
@@ -243,7 +241,7 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "role": "USER"
   }
   ```
-- **Resposta (201):**
+- **Resposta (200):**
   ```json
   {
     "success": true,
@@ -252,8 +250,218 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
       "id": "123",
       "name": "John Doe",
       "email": "johndoe@example.com",
-      "role": "USER"
+      "password": "{password_hash}",
+      "role": "USER",
+      "lastLogout": null
     }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Email is required"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
+  }
+  ```
+
+### GET `/api/admin/users`
+
+**Descrição:** Lista todos os usuarios.
+
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer {admin_token}"
+  }
+  ```
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "2 users found",
+    "data": [
+      {
+        "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+        "name": "first",
+        "email": "test1@gmail.com",
+        "password": "$2b$10$0wAGATd6L9pGZPrWGqiLOeGrv8jZOugmdwm3n45B3gtEF1BLQAEMu",
+        "role": "ADMIN",
+        "lastLogout": null
+      },
+      {
+        "id": "160d1c76-ef05-4bbe-8137-b2472e8d72ba",
+        "name": "second",
+        "email": "test2@gmail.com",
+        "password": "$2b$08$8rarUqVbbSoZuU/EeGuSPOarrVEpS53PoDg.DGad0YeE82FSKvsOC",
+        "role": "USER",
+        "lastLogout": null
+      }
+    ]
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
+  }
+  ```
+
+### GET `/api/admin/user`
+
+**Descrição:** Lista todos os usuarios.
+
+- **Observação:** Quando não fornecido nenhuma query, o usuario é redirecionado para /api/admin/users
+
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer {admin_token}"
+  }
+  ```
+- **Query:**
+  ````json
+  {
+      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+      "email": "test1@gmail.com",
+  }
+  ```
+  ````
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "User found successfully",
+    "data": {
+      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+      "name": "first",
+      "email": "test1@gmail.com",
+      "password": "$2b$10$0wAGATd6L9pGZPrWGqiLOeGrv8jZOugmdwm3n45B3gtEF1BLQAEMu",
+      "role": "ADMIN",
+      "lastLogout": null
+    }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Invalid email format"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
+  }
+  ```
+
+### PUT `/api/admin/user/:id`
+
+**Descrição:** Modifica um usuario.
+
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer {admin_token}"
+  }
+  ```
+- **Params:**
+  ```json
+  {
+    "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a"
+  }
+  ```
+- **Body:**
+  ```json
+  {
+    "name": "first updated", (optional)
+    "email": "test1@gmail.com", (optional)
+    "password": "testando123", (optional)
+    "role": "ADMIN" (optional)
+  }
+  ```
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "User updated successfully",
+    "data": {
+      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+      "name": "first",
+      "email": "test1@gmail.com",
+      "password": "$2b$10$0wAGATd6L9pGZPrWGqiLOeGrv8jZOugmdwm3n45B3gtEF1BLQAEMu",
+      "role": "ADMIN",
+      "lastLogout": null
+    }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Invalid id format"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
+  }
+  ```
+
+### DELETE `/api/admin/user/:id`
+
+**Descrição:** Deleta um usuario.
+
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer {admin_token}"
+  }
+  ```
+- **Params:**
+  ```json
+  {
+    "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a"
+  }
+  ```
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "User updated successfully",
+    "data": {
+      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+      "name": "first",
+      "email": "test1@gmail.com",
+      "password": "$2b$10$0wAGATd6L9pGZPrWGqiLOeGrv8jZOugmdwm3n45B3gtEF1BLQAEMu",
+      "role": "ADMIN",
+      "lastLogout": null
+    }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "ID is required"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
   }
   ```
 

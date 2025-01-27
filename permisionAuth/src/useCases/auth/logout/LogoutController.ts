@@ -24,7 +24,7 @@ class LogoutController {
       })
     } catch (error) {
       if (error instanceof ZodError) {
-        console.warn(`[LOGIN] Erro de validação: ${error.message}`)
+        console.warn(`[LOGOUT] Erro de validação: ${error.message}`)
         return reply.status(400).send({
           success: false,
           message: handleValidationError(error),
@@ -32,14 +32,14 @@ class LogoutController {
       }
 
       if (error instanceof PrismaClientValidationError) {
-        console.error(`[LOGIN] Erro de validação do Prisma: ${error.message}`)
+        console.error(`[LOGOUT] Erro de validação do Prisma: ${error.message}`)
         return reply.status(500).send({
           success: false,
           message: error.message,
         })
       }
 
-      console.error(`[LOGIN] Erro inesperado: ${error}`)
+      console.error(`[LOGOUT] Erro inesperado: ${error}`)
       return reply.status(500).send({
         success: false,
         message: 'Internal Server Error',
