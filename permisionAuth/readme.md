@@ -165,6 +165,18 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "message": "Token is required"
   }
   ```
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
+  }
+  ```
 - **Resposta (500):**
   ```json
   {
@@ -212,6 +224,18 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
   {
     "success": false,
     "message": "Token is required"
+  }
+  ```
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
   }
   ```
 - **Resposta (500):**
@@ -263,6 +287,18 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "message": "Email is required"
   }
   ```
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
+  }
+  ```
 - **Resposta (500):**
   ```json
   {
@@ -306,6 +342,18 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     ]
   }
   ```
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
+  }
+  ```
 - **Resposta (500):**
   ```json
   {
@@ -327,13 +375,12 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
   }
   ```
 - **Query:**
-  ````json
+  ```json
   {
-      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
-      "email": "test1@gmail.com",
+    "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+    "email": "test1@gmail.com"
   }
   ```
-  ````
 - **Resposta (200):**
   ```json
   {
@@ -354,6 +401,18 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
   {
     "success": false,
     "message": "Invalid email format"
+  }
+  ```
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
   }
   ```
 - **Resposta (500):**
@@ -383,12 +442,13 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
 - **Body:**
   ```json
   {
-    "name": "first updated", (optional)
-    "email": "test1@gmail.com", (optional)
-    "password": "testando123", (optional)
-    "role": "ADMIN" (optional)
+    "name": "first updated",
+    "email": "test1@gmail.com",
+    "password": "testando123",
+    "role": "ADMIN"
   }
   ```
+  `Todos os parametros são opcionais`
 - **Resposta (200):**
   ```json
   {
@@ -409,6 +469,18 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
   {
     "success": false,
     "message": "Invalid id format"
+  }
+  ```
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
   }
   ```
 - **Resposta (500):**
@@ -457,6 +529,228 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
     "message": "ID is required"
   }
   ```
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
+  }
+  ```
+
+### POST `/api/user`
+
+**Descrição:** Cria um usuario.
+
+- **Body:**
+  ```json
+  {
+    "name": "first",
+    "email": "test1@gmail.com",
+    "password": "teste123"
+  }
+  ```
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "User created successfully",
+    "data": {
+      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+      "name": "first",
+      "email": "test1@gmail.com",
+      "password": "$2b$10$0wAGATd6L9pGZPrWGqiLOeGrv8jZOugmdwm3n45B3gtEF1BLQAEMu",
+      "role": "ADMIN",
+      "lastLogout": null
+    }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Email is required"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
+  }
+  ```
+
+### GET `/api/user`
+
+**Descrição:** Mostra dados do usuario loggado.
+
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer {token}"
+  }
+  ```
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "User found successfully",
+    "data": {
+      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+      "name": "first",
+      "email": "test1@gmail.com",
+      "password": "$2b$10$0wAGATd6L9pGZPrWGqiLOeGrv8jZOugmdwm3n45B3gtEF1BLQAEMu",
+      "role": "ADMIN",
+      "lastLogout": null
+    }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Invalid email format"
+  }
+  ```
+  `Erro no token`
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
+  }
+  ```
+
+### PUT `/api/user`
+
+**Descrição:** Modifica dados do usuario loggado.
+
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer {token}"
+  }
+  ```
+- **Body:**
+  ```json
+  {
+    "name": "update",
+    "email": "updating1@gmail.com",
+    "password": "update1"
+  }
+  ```
+  `Todos os campos são opcionais`
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "User updated successfully",
+    "data": {
+      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+      "name": "update",
+      "email": "updating1@gmail.com",
+      "password": "$2b$10$0wAGATd6L9pGZPrWGqiLOeGrv8jZOugmdwm3n45B3gtEF1BLQAEMu",
+      "role": "USER",
+      "lastLogout": null
+    }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Invalid email format"
+  }
+  ```
+  `Erro no token`
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
+  }
+  ```
+- **Resposta (500):**
+  ```json
+  {
+    "success": false,
+    "message": "Internal server error"
+  }
+  ```
+
+### DELETE `/api/user`
+
+**Descrição:** Deleta o usuario loggado.
+
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer {token}"
+  }
+  ```
+- **Resposta (200):**
+  ```json
+  {
+    "success": true,
+    "message": "User deleted successfully",
+    "data": {
+      "id": "33489e18-1553-4d09-aa28-1eec77c7ad1a",
+      "name": "update",
+      "email": "updating1@gmail.com",
+      "password": "$2b$10$0wAGATd6L9pGZPrWGqiLOeGrv8jZOugmdwm3n45B3gtEF1BLQAEMu",
+      "role": "USER",
+      "lastLogout": null
+    }
+  }
+  ```
+- **Resposta (400):**
+  ```json
+  {
+    "success": false,
+    "message": "Invalid email format"
+  }
+  ```
+  `Erro no token`
+- **Resposta (401):**
+  ```json
+  {
+    "message": "Refresh token ausente"
+  }
+  ```
+- **Resposta (403):**
+  ```json
+  {
+    "message": "Permissão insuficiente"
+  }
+  ```
 - **Resposta (500):**
   ```json
   {
@@ -483,5 +777,5 @@ Esta é uma API desenvolvida para gerenciar autenticação de usuários e contro
 
 Para mais informações ou dúvidas, entre em contato:
 
-- **E-mail:** suporte@example.com
-- **GitHub:** [Seu Repositório](https://github.com/seu-repositorio)
+- **E-mail:** thiago.ce.al@gmail.com
+- **GitHub:** [Meu Repositório](https://github.com/ThiagoAlbqq)

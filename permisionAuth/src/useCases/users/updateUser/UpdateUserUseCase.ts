@@ -7,9 +7,6 @@ interface IUserUpdateRequest {
   name?: string
   email?: string
   password?: string
-  // O usuário não poderá mudar a Role dele, se não for ADMIN.
-  role?: 'ADMIN' | 'USER' | 'MODERATOR'
-  authenticatedUserId?: number
 }
 
 class UpdateUserUseCase {
