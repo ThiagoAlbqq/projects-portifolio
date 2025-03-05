@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import userRoutes from './routes/user.routes';
+import adminRoutes from './routes/admin.routes';
 
 const fastify = Fastify();
 
@@ -8,6 +9,7 @@ fastify.get('/', async (request, reply) => {
 });
 
 fastify.register(userRoutes);
+fastify.register(adminRoutes);
 
 fastify.listen({ port: 3000 }, (err, address) => {
   if (err) {

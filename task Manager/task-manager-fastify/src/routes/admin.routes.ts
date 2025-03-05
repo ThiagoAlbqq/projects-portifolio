@@ -1,6 +1,11 @@
 import { FastifyInstance } from 'fastify';
+import { AdminController } from '../controllers/admin.controller';
 
-export default async function adminRoutes(app: FastifyInstance) {}
+export default async function adminRoutes(app: FastifyInstance) {
+  const adminController = new AdminController();
+
+  app.get('/admin/users', adminController.getUsers);
+}
 
 // GET /admin/tasks – Listar todas as tarefas de todos os usuários.
 // GET /admin/tasks/:id – Detalhes de uma tarefa específica, de qualquer usuário.
