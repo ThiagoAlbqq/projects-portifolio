@@ -38,7 +38,7 @@ class TaskController {
   }
 
   async get(req: FastifyRequest, reply: FastifyReply) {
-    const { userId } = req.params as { userId: string };
+    const { userId } = req.body as { userId: string };
     const data = await this.taskUseCases.get(userId);
     reply.status(data.success ? 200 : 500).send(data);
   }

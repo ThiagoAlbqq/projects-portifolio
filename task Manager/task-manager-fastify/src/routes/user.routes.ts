@@ -4,11 +4,11 @@ import { TaskController } from '../controllers/task.controller';
 export default async function userRoutes(app: FastifyInstance) {
   const taskController = new TaskController();
 
-  app.get('/tasks/:userId', taskController.get);
-  app.get('/task/:id', taskController.getUnique);
-  app.post('/tasks', taskController.create);
-  app.put('/tasks/:id', taskController.update);
-  app.delete('/tasks/:id', taskController.delete);
+  app.get('/', taskController.get);
+  app.get('/:id', taskController.getUnique);
+  app.post('/', taskController.create);
+  app.put('/:id', taskController.update);
+  app.delete('/:id', taskController.delete);
 }
 
 // GET /tasks – Listar todas as tarefas do usuário autenticado.

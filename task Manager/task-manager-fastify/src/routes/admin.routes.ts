@@ -4,7 +4,13 @@ import { AdminController } from '../controllers/admin.controller';
 export default async function adminRoutes(app: FastifyInstance) {
   const adminController = new AdminController();
 
-  app.get('/admin/users', adminController.getUsers);
+  app.get('/tasks', adminController.getAllTasks);
+  app.get('/tasks/:taskId', adminController.getAnyTask);
+  app.put('/tasks/:taskId', adminController.modifyAnyTask);
+  app.delete('/tasks/:taskId', adminController.deleteAnyTask);
+  app.get('/users', adminController.getAllUsers);
+
+  app.delete('/users/:userId', adminController.deleteAnyUser);
 }
 
 // GET /admin/tasks – Listar todas as tarefas de todos os usuários.

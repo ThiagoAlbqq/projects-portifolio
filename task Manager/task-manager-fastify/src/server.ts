@@ -8,8 +8,8 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' };
 });
 
-fastify.register(userRoutes);
-fastify.register(adminRoutes);
+fastify.register(userRoutes, { prefix: '/tasks' });
+fastify.register(adminRoutes, { prefix: '/admin' });
 
 fastify.listen({ port: 3000 }, (err, address) => {
   if (err) {

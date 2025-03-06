@@ -1,13 +1,5 @@
 import { prisma } from '../database/prisma.config';
-
-interface Task {
-  title: string; // Título da tarefa
-  description?: string; // Descrição opcional da tarefa
-  completed: boolean; // Status da tarefa (concluída ou não)
-  priority: 'low' | 'medium' | 'high'; // Prioridade da tarefa
-  dueDate?: Date; // Data de vencimento (opcional)
-  userId: string; // ID do usuário que criou a tarefa (para controle de acesso)
-}
+import { Task } from '../entities/task.entity';
 
 interface TaskUpdate {
   id: number;
