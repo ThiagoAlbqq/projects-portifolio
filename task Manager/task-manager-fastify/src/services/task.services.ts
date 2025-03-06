@@ -10,12 +10,6 @@ interface TaskUpdate {
   dueDate?: Date;
 }
 
-interface Response<T> {
-  success: boolean;
-  message: string;
-  data?: T;
-}
-
 class TaskUseCases {
   async getUnique(id: number) {
     try {

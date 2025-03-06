@@ -1,6 +1,6 @@
-import { string } from 'zod';
 import { prisma } from '../database/prisma.config';
-import { Task, TaskModel } from '../entities/task.entity';
+import { TaskModel } from '../entities/task.entity';
+import { hash } from 'bcrypt';
 
 interface Response<T> {
   success: boolean;
@@ -16,6 +16,13 @@ interface DataResponse {
     priority: string;
     completed: boolean;
   }[];
+}
+
+interface UserCreate {
+  nome: string;
+  email: string;
+  password: string;
+  role: string;
 }
 
 interface TaskRespose {
@@ -41,12 +48,9 @@ interface TaskUpdate {
 interface UserModel {
   id: string;
   nome: string;
-}
-
-interface Response<T> {
-  success: boolean;
-  message: string;
-  data?: T;
+  email: string;
+  password: string;
+  role: string;
 }
 
 class AdminUseCases {
@@ -142,7 +146,7 @@ class AdminUseCases {
 
   async deleteAnyUser(id: string): Promise<Response<UserModel>> {
     try {
-      const task = await prisma.user.delete({ where: { id }, select: { id: true, nome: true } });
+      const task = await prisma.user.delete({ where: { id } });
       return {
         success: true,
         message: 'Usuario deletado com exito',
@@ -152,6 +156,33 @@ class AdminUseCases {
       return {
         success: false,
         message: 'Não foi possivel deletar o usuario',
+      };
+    }
+  }
+
+  async createNewUser({ nome, email, password, role }: UserCreate): Promise<Response<UserModel>> {
+    try {
+      const saltRounds = parseInt(process.env.SALTS || '8', 10);
+      const passwordHash = await hash(password, saltRounds);
+
+      const user = await prisma.user.create({
+        data: {
+          nome,
+          email,
+          password: passwordHash,
+          role: role,
+        },
+      });
+      return {
+        success: true,
+        message: 'Usuario cadrastado com exito',
+        data: user,
+      };
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      return {
+        success: false,
+        message: 'Não foi possivel criar o usuario',
       };
     }
   }

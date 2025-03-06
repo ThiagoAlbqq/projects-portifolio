@@ -14,9 +14,12 @@ datasource db {
 }
 
 model User {
-  id   String @id @default(uuid())
-  nome String
-  Task Task[]
+  id       String @id @default(uuid())
+  nome     String
+  email    String @unique
+  password String
+  role     String
+  Task     Task[]
 }
 
 model Task {

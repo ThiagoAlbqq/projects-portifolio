@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyBodyParser, FastifyReply, FastifyRequest } from 'fastify';
 import { AdminUseCases } from '../services/admin.services';
 import { z } from 'zod';
 
@@ -10,17 +10,26 @@ const TaskUpdate = z.object({
   dueDate: z.date().optional(),
 });
 
+const userCreateSchema = z.object({
+  nome: z.string(),
+  email: z.string().email(),
+  password: z.string(),
+  role: z.enum(['REGULAR', 'ADMIN']),
+});
+
 class AdminController {
   private adminUseCases: AdminUseCases;
 
   constructor() {
     this.adminUseCases = new AdminUseCases();
+
     this.getAllUsers = this.getAllUsers.bind(this);
     this.getAllTasks = this.getAllTasks.bind(this);
     this.getAnyTask = this.getAnyTask.bind(this);
     this.deleteAnyTask = this.deleteAnyTask.bind(this);
     this.modifyAnyTask = this.modifyAnyTask.bind(this);
     this.deleteAnyUser = this.deleteAnyUser.bind(this);
+    this.createNewUser = this.createNewUser.bind(this);
   }
 
   async getAllUsers(req: FastifyRequest, reply: FastifyReply) {
@@ -55,6 +64,12 @@ class AdminController {
   async deleteAnyUser(req: FastifyRequest, reply: FastifyReply) {
     const { userId } = req.params as { userId: string };
     const data = await this.adminUseCases.deleteAnyUser(userId);
+    reply.status(data.success ? 200 : 500).send(data);
+  }
+
+  async createNewUser(req: FastifyRequest, reply: FastifyReply) {
+    const dataUser = userCreateSchema.parse(req.body);
+    const data = await this.adminUseCases.createNewUser(dataUser);
     reply.status(data.success ? 200 : 500).send(data);
   }
 }

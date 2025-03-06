@@ -9,7 +9,7 @@ export default async function adminRoutes(app: FastifyInstance) {
   app.put('/tasks/:taskId', adminController.modifyAnyTask);
   app.delete('/tasks/:taskId', adminController.deleteAnyTask);
   app.get('/users', adminController.getAllUsers);
-
+  app.post('/users', adminController.createNewUser);
   app.delete('/users/:userId', adminController.deleteAnyUser);
 }
 

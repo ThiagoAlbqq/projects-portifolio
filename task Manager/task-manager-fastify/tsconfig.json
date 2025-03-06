@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types" // Adicione este diretório, onde o arquivo fastify.d.ts está
+    ],
     "resolveJsonModule": true,
     /* Projects */
     // "incremental": true,                              /* Save .tsbuildinfo files to allow for incremental compilation of projects. */

@@ -1,7 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { TaskController } from '../controllers/task.controller';
+import { UserController } from '../controllers/user.controller';
+import { authenticate } from '../middlewares/authenticate';
 
-export default async function userRoutes(app: FastifyInstance) {
+async function userTasksRoutes(app: FastifyInstance) {
   const taskController = new TaskController();
 
   app.get('/', taskController.get);
@@ -10,6 +12,15 @@ export default async function userRoutes(app: FastifyInstance) {
   app.put('/:id', taskController.update);
   app.delete('/:id', taskController.delete);
 }
+
+async function userConfigRoutes(app: FastifyInstance) {
+  const userController = new UserController();
+  app.get('/user', { preValidation: [authenticate] }, userController.getUser);
+  // app.put("/", userController.updateUser)
+  // app.delete("/", userController.deleteUser)
+}
+
+export { userTasksRoutes, userConfigRoutes };
 
 // GET /tasks – Listar todas as tarefas do usuário autenticado.
 // GET /tasks/:id – Detalhes de uma tarefa específica.
