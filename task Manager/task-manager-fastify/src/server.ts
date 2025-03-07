@@ -10,7 +10,7 @@ fastify.get('/', async (request, reply) => {
 });
 
 fastify.register(userTasksRoutes, { prefix: '/tasks' });
-fastify.register(userConfigRoutes);
+fastify.register(userConfigRoutes, { prefix: '/user' });
 fastify.register(adminRoutes, { prefix: '/admin' });
 fastify.register(loginRoute);
 

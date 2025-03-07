@@ -8,12 +8,13 @@ interface TaskUpdate {
   completed?: boolean;
   priority?: 'low' | 'medium' | 'high';
   dueDate?: Date;
+  userId: string;
 }
 
 class TaskUseCases {
-  async getUnique(id: number) {
+  async getUnique(userId: string, id: number) {
     try {
-      const task = await prisma.task.findUnique({ where: { id } });
+      const task = await prisma.task.findUnique({ where: { id, userId } });
       return {
         success: !!task,
         message: task ? 'Tarefa encontrada' : 'Tarefa não encontrada',
@@ -62,10 +63,10 @@ class TaskUseCases {
     }
   }
 
-  async update({ id, description, dueDate, priority, title, completed }: TaskUpdate) {
+  async update({ userId, id, description, dueDate, priority, title, completed }: TaskUpdate) {
     try {
       const updatedTask = await prisma.task.update({
-        where: { id },
+        where: { id, userId },
         data: {
           ...(title && { title }),
           ...(description && { description }),
@@ -94,9 +95,9 @@ class TaskUseCases {
     }
   }
 
-  async delete(id: number) {
+  async delete(userId: string, id: number) {
     try {
-      await prisma.task.delete({ where: { id } });
+      await prisma.task.delete({ where: { id, userId } });
       return {
         success: true,
         message: 'Tarefa deletada com sucesso',
