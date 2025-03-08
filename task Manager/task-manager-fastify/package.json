@@ -4,6 +4,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "ct1": "tsx watch src/client.ts",
+    "ct2": "tsx watch src/client2.ts",
+    "ws": "tsx watch src/ws.ts",
+    "thi": "tsx watch src/notification.websocket.ts",
     "start": "tsx src/server.ts"
   },
   "keywords": [],
@@ -12,6 +16,7 @@
   "description": "",
   "dependencies": {
     "@fastify/autoload": "^6.1.0",
+    "@fastify/websocket": "^11.0.2",
     "@prisma/client": "^6.4.1",
     "bcrypt": "^5.1.1",
     "fastify": "^5.2.1",
@@ -19,15 +24,18 @@
     "ioredis": "^5.6.0",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^6.4.1",
+    "readline": "^1.3.0",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2",
+    "ws": "^8.18.1",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.9",
+    "@types/ws": "^8.18.0",
     "nodemon": "^3.1.9",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
   }
 }

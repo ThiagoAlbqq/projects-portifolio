@@ -1,22 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { TaskUseCases } from '../services/task.services';
-import { z } from 'zod';
-
-const taskCreate = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  completed: z.boolean(),
-  priority: z.enum(['low', 'medium', 'high']),
-  dueDate: z.date().optional(),
-});
-
-const TaskUpdate = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  completed: z.boolean().optional(),
-  priority: z.enum(['low', 'medium', 'high']).optional(),
-  dueDate: z.date().optional(),
-});
+import { TaskUseCases } from './tasks.services';
+import { TaskCreateController, taskCreateController, taskCreateService, taskUpdate } from './tasks.schema';
 
 class TaskController {
   private taskUseCases: TaskUseCases;
@@ -49,13 +33,14 @@ class TaskController {
     reply.status(data.success ? 200 : 500).send(data);
   }
 
-  async create(req: FastifyRequest, reply: FastifyReply) {
+  async create(req: FastifyRequest<{ Body: TaskCreateController }>, reply: FastifyReply) {
+    req.user = { id: '1d9c07e7-534f-4625-a550-324952c0c604', role: 'ADMIN' };
     const userId = req.user?.id;
     if (!userId) {
       return reply.status(500).send({ success: false, message: 'Erro interno do servidor' });
     }
-    const task = taskCreate.parse(req.body);
-    const data = await this.taskUseCases.create({ userId, ...task });
+    const task = taskCreateService.parse({ userId, ...req.body });
+    const data = await this.taskUseCases.create(task);
     reply.status(data.success ? 200 : 500).send(data);
   }
 
@@ -65,7 +50,7 @@ class TaskController {
       return reply.status(500).send({ success: false, message: 'Erro interno do servidor' });
     }
     const { id } = req.params as { id: number };
-    const task = TaskUpdate.parse(req.body);
+    const task = taskUpdate.parse(req.body);
     const data = await this.taskUseCases.update({ userId, id: Number(id), ...task });
     reply.status(data.success ? 200 : 500).send(data);
   }

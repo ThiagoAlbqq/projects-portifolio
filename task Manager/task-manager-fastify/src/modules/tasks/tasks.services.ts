@@ -1,5 +1,5 @@
-import { prisma } from '../database/prisma.config';
-import { Task } from '../entities/task.entity';
+import { prisma } from '../../infra/prisma.config';
+import { Task, TaskCreateService } from '../tasks/tasks.schema';
 
 interface TaskUpdate {
   id: number;
@@ -44,12 +44,21 @@ class TaskUseCases {
     }
   }
 
-  async create({ title, description, priority, completed, userId, dueDate }: Task) {
+  async create({ title, description, priority, completed, userId, dueDate }: TaskCreateService) {
     try {
+      // Se `dueDate` não for fornecido, define a data de vencimento como 3 dias após a data atual
+      let newDueDate = dueDate;
+      if (!newDueDate) {
+        newDueDate = new Date(); // Cria a data atual
+        newDueDate.setDate(newDueDate.getDate() + 3); // Define a data como 3 dias depois
+      }
+
+      // Criação da nova tarefa
       const newTask = await prisma.task.create({
-        data: { title, description, completed, priority, dueDate, userId },
+        data: { title, description, completed, priority, dueDate: newDueDate, userId },
         select: { title: true, description: true, priority: true, completed: true, userId: true },
       });
+
       return {
         success: true,
         message: 'Tarefa criada com sucesso',
@@ -58,7 +67,7 @@ class TaskUseCases {
     } catch (error) {
       return {
         success: false,
-        message: 'Erro ao criar a tarefa: ' + error,
+        message: 'Erro ao criar a tarefa',
       };
     }
   }

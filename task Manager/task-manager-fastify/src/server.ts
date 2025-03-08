@@ -1,7 +1,5 @@
 import Fastify from 'fastify';
-import { userConfigRoutes, userTasksRoutes } from './routes/user.routes';
-import adminRoutes from './routes/admin.routes';
-import loginRoute from './routes/login.route';
+import tasksRoutes from './modules/tasks/tasks.routes';
 
 const fastify = Fastify();
 
@@ -9,10 +7,7 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' };
 });
 
-fastify.register(userTasksRoutes, { prefix: '/tasks' });
-fastify.register(userConfigRoutes, { prefix: '/user' });
-fastify.register(adminRoutes, { prefix: '/admin' });
-fastify.register(loginRoute);
+fastify.register(tasksRoutes);
 
 fastify.listen({ port: 3000 }, (err, address) => {
   if (err) {

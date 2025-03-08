@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import { TaskController } from '../controllers/task.controller';
-import { UserController } from '../controllers/user.controller';
-import { authenticate } from '../middlewares/authenticate';
+import { TaskController } from '../tasks/tasks.controller';
+import { UserController } from './users.controller';
+import { authenticate } from '../../middlewares/authenticate';
 
 const taskController = new TaskController();
 const userController = new UserController();
