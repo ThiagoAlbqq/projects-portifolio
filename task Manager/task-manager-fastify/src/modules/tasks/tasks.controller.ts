@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { TaskUseCases } from './tasks.services';
-import { TaskCreateController, taskCreateController, taskCreateService, taskUpdate } from './tasks.schema';
+import { TaskCreateController, taskCreateService, TaskUpdateController, taskUpdateService } from './tasks.schema';
 
 class TaskController {
   private taskUseCases: TaskUseCases;
@@ -16,6 +16,7 @@ class TaskController {
 
   async getUnique(req: FastifyRequest, reply: FastifyReply) {
     const { id } = req.params as { id: number };
+    req.user = { id: '57e58c9e-e350-4d1b-af13-6b366c294a92', role: 'ADMIN' };
     const userId = req.user?.id;
     if (!userId) {
       return reply.status(500).send({ success: false, message: 'Erro interno do servidor' });
@@ -25,6 +26,7 @@ class TaskController {
   }
 
   async get(req: FastifyRequest, reply: FastifyReply) {
+    req.user = { id: '57e58c9e-e350-4d1b-af13-6b366c294a92', role: 'ADMIN' };
     const userId = req.user?.id;
     if (!userId) {
       return reply.status(500).send({ success: false, message: 'Erro interno do servidor' });
@@ -34,7 +36,7 @@ class TaskController {
   }
 
   async create(req: FastifyRequest<{ Body: TaskCreateController }>, reply: FastifyReply) {
-    req.user = { id: '1d9c07e7-534f-4625-a550-324952c0c604', role: 'ADMIN' };
+    req.user = { id: '57e58c9e-e350-4d1b-af13-6b366c294a92', role: 'ADMIN' };
     const userId = req.user?.id;
     if (!userId) {
       return reply.status(500).send({ success: false, message: 'Erro interno do servidor' });
@@ -44,23 +46,25 @@ class TaskController {
     reply.status(data.success ? 200 : 500).send(data);
   }
 
-  async update(req: FastifyRequest, reply: FastifyReply) {
+  async update(req: FastifyRequest<{ Body: TaskUpdateController }>, reply: FastifyReply) {
+    req.user = { id: '57e58c9e-e350-4d1b-af13-6b366c294a92', role: 'ADMIN' };
     const userId = req.user?.id;
     if (!userId) {
       return reply.status(500).send({ success: false, message: 'Erro interno do servidor' });
     }
-    const { id } = req.params as { id: number };
-    const task = taskUpdate.parse(req.body);
-    const data = await this.taskUseCases.update({ userId, id: Number(id), ...task });
+    const { id } = req.params as { id: string };
+    const task = taskUpdateService.parse({ id: Number(id), userId, ...req.body });
+    const data = await this.taskUseCases.update(task);
     reply.status(data.success ? 200 : 500).send(data);
   }
 
   async delete(req: FastifyRequest, reply: FastifyReply) {
+    req.user = { id: '57e58c9e-e350-4d1b-af13-6b366c294a92', role: 'ADMIN' };
     const userId = req.user?.id;
     if (!userId) {
       return reply.status(500).send({ success: false, message: 'Erro interno do servidor' });
     }
-    const { id } = req.params as { id: number };
+    const { id } = req.params as { id: string };
     const data = await this.taskUseCases.delete(userId, Number(id));
     reply.status(data.success ? 200 : 500).send(data);
   }

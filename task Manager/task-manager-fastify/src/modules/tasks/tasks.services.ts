@@ -1,20 +1,11 @@
 import { prisma } from '../../infra/prisma.config';
-import { Task, TaskCreateService } from '../tasks/tasks.schema';
-
-interface TaskUpdate {
-  id: number;
-  title?: string;
-  description?: string;
-  completed?: boolean;
-  priority?: 'low' | 'medium' | 'high';
-  dueDate?: Date;
-  userId: string;
-}
+import { Response } from '../../utils/globals.interfaces';
+import { ITask, SecureITask, TaskCreateService, TaskUpdateService } from '../tasks/tasks.schema';
 
 class TaskUseCases {
-  async getUnique(userId: string, id: number) {
+  async getUnique(userId: string, id: number): Promise<Response<SecureITask | null>> {
     try {
-      const task = await prisma.task.findUnique({ where: { id, userId } });
+      const task = await prisma.task.findUnique({ where: { id, userId }, select: { id: true, title: true, description: true, priority: true, completed: true, dueDate: true } });
       return {
         success: !!task,
         message: task ? 'Tarefa encontrada' : 'Tarefa não encontrada',
@@ -28,9 +19,9 @@ class TaskUseCases {
     }
   }
 
-  async get(userId: string) {
+  async get(userId: string): Promise<Response<SecureITask[]>> {
     try {
-      const tasks = await prisma.task.findMany({ where: { userId } });
+      const tasks = await prisma.task.findMany({ where: { userId }, select: { id: true, title: true, description: true, priority: true, completed: true, dueDate: true } });
       return {
         success: true,
         message: 'Tarefas listadas com sucesso',
@@ -44,19 +35,16 @@ class TaskUseCases {
     }
   }
 
-  async create({ title, description, priority, completed, userId, dueDate }: TaskCreateService) {
+  async create({ title, description, priority, completed, userId, dueDate }: TaskCreateService): Promise<Response<SecureITask>> {
     try {
-      // Se `dueDate` não for fornecido, define a data de vencimento como 3 dias após a data atual
-      let newDueDate = dueDate;
-      if (!newDueDate) {
-        newDueDate = new Date(); // Cria a data atual
-        newDueDate.setDate(newDueDate.getDate() + 3); // Define a data como 3 dias depois
+      if (dueDate === undefined) {
+        dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 3);
       }
 
-      // Criação da nova tarefa
       const newTask = await prisma.task.create({
-        data: { title, description, completed, priority, dueDate: newDueDate, userId },
-        select: { title: true, description: true, priority: true, completed: true, userId: true },
+        data: { title, description, completed, priority, dueDate, userId },
+        select: { id: true, title: true, description: true, priority: true, completed: true, dueDate: true },
       });
 
       return {
@@ -72,24 +60,23 @@ class TaskUseCases {
     }
   }
 
-  async update({ userId, id, description, dueDate, priority, title, completed }: TaskUpdate) {
+  async update({ userId, id, description, dueDate, priority, title, completed }: TaskUpdateService): Promise<Response<SecureITask>> {
     try {
+      if (dueDate === undefined) {
+        dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 3);
+      }
+
       const updatedTask = await prisma.task.update({
         where: { id, userId },
         data: {
           ...(title && { title }),
           ...(description && { description }),
           ...(priority && { priority }),
-          ...(completed && { completed }),
+          ...(completed !== undefined && { completed }),
           ...(dueDate && { dueDate }),
         },
-        select: {
-          title: true,
-          description: true,
-          priority: true,
-          completed: true,
-          userId: true,
-        },
+        select: { id: true, title: true, description: true, priority: true, completed: true, dueDate: true },
       });
       return {
         success: true,
@@ -104,7 +91,7 @@ class TaskUseCases {
     }
   }
 
-  async delete(userId: string, id: number) {
+  async delete(userId: string, id: number): Promise<Response<null>> {
     try {
       await prisma.task.delete({ where: { id, userId } });
       return {
